@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Documentos{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+
+      
+      {% from 'bootstrap/form.html' import render_field %}
+      {% from 'bootstrap/form.html' import render_form %}
+      <h1>Cargar documento(s)</h1>
+
+
+      <form method="POST" enctype="multipart/form-data">
+	{{ form.hidden_tag() }}
+	{{ render_field(form.name) }}
+	{{ form.file(multiple="multiple") }}
+	{{ render_field(form.submit) }}
+      </form>
+      <div class="row">
+	{% if links|length == 0 %}
+	<h2>No hay documentos por revisar</h2>
+	{% else %}
+	{% for link in links %}
+	<div class="col-sm-3">
+	  <div class="card">
+	    <img src="/{{ link }}/page-1.jpg" class="card-img-top" alt="hola" style="height:300px;">
+	    <div class="card-body">
+              <h5 class="card-title">{{ link }}</h5>
+              
+              <a href="editing?file={{ link }}" class="btn btn-primary">Editar</a>
+	    </div>
+	  </div>
+	</div>
+	{% endfor %}
+	{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

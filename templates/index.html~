@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Upload new File</title>
+    <link rel="stylesheet" href="fonts.css"/>
+    <link rel="stylesheet" href="main.css"/>
+    <link rel="stylesheet" href="hocr-proofreader.css"/>
+    <script src="hocr-proofreader.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+    <h1>Upload new Files</h1>
+    <form method=post enctype=multipart/form-data>
+      Nombre del archivo: <input type="text" name="name"><br>
+      Archivo o archivos: <input type=file name=file multiple><br>
+      <input type=submit value=Upload>
+    </form>
+    <ul>
+    {% for link in links %}
+      <li><a href="editing?file={{ link }}"> {{ link }} </a></li>
+    {% endfor %}
+    </ul>
+    <h2 style="text-align:center">Lightbox</h2>
+</body>
+</html>

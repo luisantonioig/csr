@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Editar documento{% endblock %}
+{% block head %}
+<meta charset="utf-8">
+<title>hOCR-Proofreader</title>
+<link rel="stylesheet" href="fonts.css"/>
+<link rel="stylesheet" href="main.css"/>
+<link rel="stylesheet" href="hocr-proofreader.css"/>
+<script src="hocr-proofreader.js"></script>
+<script>
+  'use strict';
+  
+  Util.onReady(function () {
+      var hocrProofreader = new HocrProofreader({
+          layoutContainer: 'layout-container',
+          editorContainer: 'editor-container'
+      });
+      
+      document.getElementById('toggle-layout-image').addEventListener('click', function () {
+          hocrProofreader.toggleLayoutImage();
+      });
+      
+      document.getElementById('zoom-page-full').addEventListener('click', function () {
+          hocrProofreader.setZoom('page-full');
+      });
+      
+      document.getElementById('zoom-page-width').addEventListener('click', function () {
+          hocrProofreader.setZoom('page-width');
+      });
+      
+      document.getElementById('zoom-original').addEventListener('click', function () {
+          hocrProofreader.setZoom('original');
+      });
+      
+      document.getElementById('button-save').addEventListener('click', function () {
+          var hocr = hocrProofreader.getHocr();
+	  
+          var request = new XMLHttpRequest();
+          request.open('POST', 'http://localhost:5000/save?file={{ file }}');
+          request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+          request.send('hocr=' + encodeURIComponent(hocr));
+	  
+	  request.onload = function() {
+	      if (request.status != 200) { // analyze HTTP status of the response
+		  alert(`Error ${request.status}: ${request.statusText}`); // e.g. 404: Not Found
+	      } else { // show the result
+		  location.replace("http://localhost:5000");
+	      }
+	  };
+	  
+	  // location.replace("http://localhost:5000");
+      });
+      
+      var hocrBaseUrl = '{{ file }}/';
+      var hocrUrl = hocrBaseUrl + '{{ file }}.hocr';
+      
+      Util.get(hocrUrl, function (err, hocr) {
+          if (err) return Util.handleError(err);
+	  
+          hocrProofreader.setHocr(hocr, hocrBaseUrl);
+      });
+  });
+</script>
+{% endblock %}
+{% block content %}
+<div class="viewport">
+    <div class="toolbar">
+        <div class="logo">hOCR-Proofreader</div>
+
+        <button id="toggle-layout-image">Image/Text</button>
+        <div class="separator"></div>
+
+        <span>Zoom:</span>
+        <button id="zoom-page-full">Full Page</button>
+        <button id="zoom-page-width">Page Width</button>
+        <button id="zoom-original">Original</button>
+        <div class="separator"></div>
+
+        <button id="button-save">Save</button>
+    </div>
+
+    <div id="layout-container" class="container"></div>
+    <div id="editor-container" class="container"></div>
+</div>
+{% endblock %}
