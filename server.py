@@ -1,8 +1,10 @@
 from flask import Flask, escape, request, flash, redirect, url_for, render_template
 import os
 from werkzeug.utils import secure_filename
-from shutil import copyfile
+from shutil import copyfile, rmtree
 from flask_bootstrap import Bootstrap
+from os import listdir
+from os.path import isfile, join
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField, PasswordField, FileField
@@ -172,8 +174,9 @@ def hello():
     print("cd static/" + file + "; /usr/local/bin/hocr-split "+ file +".hocr page-%01d.hocr; cd ../..;")
     os.system("cd static/" + file + "; /usr/local/bin/hocr-split "+ file +".hocr page-%01d.hocr; cd ../..;")
     # copyfile(os.path.join("static", file, file + ".jpg"), os.path.join("reviewed_files",file,file + ".jpg"))
-    os.system("/usr/local/bin/hocr-pdf static/"+ file +"/ > /var/www/files.com/html/" + file + ".pdf")
-    print("cd static/" + file + "; /usr/local/bin/hocr-split "+ file +".hocr page-%01d.hocr; cd ../..;")
+    os.system("/usr/local/bin/hocr-pdf static/"+ file +"/ > static/files/" + file + ".pdf")
+    copyfile("static/" + file + "/page-1.jpg", "static/files/" + file + ".jpg")
+    rmtree("static/"+file+"/")
     return redirect(url_for('upload_file'))
 
 
@@ -210,9 +213,18 @@ def borrar():
         os.remove(app.config['UPLOAD_FOLDER']+"/"+ name + "/tmp.txt")
         return redirect(url_for('borrar'))
     os.chdir("static")
-    docs = [name for name in os.listdir(".") if os.path.isdir(name)]
+    docs = [name for name in os.listdir(".") if os.path.isdir(name) and name != "files" and name != "icons"]
     os.chdir("..")
     return render_template('borrar.html', form = form, links = docs)
+
+@app.route('/terminados')
+def terminados():
+
+    onlyfiles = [f for f in listdir("static/files/") if isfile(join("static/files/", f)) and f.endswith(".pdf")]
+    onlyfiles = map(lambda x: x[:-4], onlyfiles)
+
+    print(onlyfiles)
+    return render_template('terminados.html', files = onlyfiles)
 
 if __name__ == "__main__":
     app.run()

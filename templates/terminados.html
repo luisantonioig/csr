@@ -1,0 +1,88 @@
+
+  
+  
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="X-UA-Compatible" content="IE=edge"> </head>
+{% extends "base.html" %}
+{% block title %}Index of /{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="/grid-darkmode.css" type="text/css">
+{% endblock %}
+{% block content %}
+  <main>
+    <!--
+      Add any static information or notices here
+    -->
+
+    <h1 class="title">Documentos <span class="js-path"><a href="/">/</a></span></h1>
+  <table id="indexlist">
+    <tbody>
+      <tr class="indexhead">
+	<th class="indexcolicon">
+	  <img src="/icons/blank.svg" alt="[ICO]"></th><th class="indexcolname">
+	  <a href="?C=N;O=D">Name</a></th><th class="indexcollastmod">
+	  <a href="?C=M;O=A">Last modified</a>
+	</th>
+	<th class="indexcolsize">
+	  <a href="?C=S;O=A">Size</a>
+	</th>
+      </tr>
+      {% for file in files %}
+      <tr class="even">
+	<td class="indexcolicon">
+	  <a href="files/{{ file }}.pdf" tabindex="-1"><img src="files/{{ file }}.jpg" alt="[   ]"></a>
+	</td>
+	<td class="indexcolname">
+	  <a href="files/{{ file }}.pdf">{{ file }}</a>
+	</td><td class="indexcollastmod">2019-10-15 11:51  </td>
+	<td class="indexcolsize">916K</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </main>
+
+  <footer>
+    <!--
+      Add any other listing related copyright content here
+    -->
+
+    <a href="http://localhost:5000"><em>Cargar o editar documento(s)</em></a>
+  </footer>
+  
+  <script>
+    function joinUntil(array, index, separator) {
+      var result = [];
+
+      for (var i = 0; i <= index; i++) {
+        result.push(array[i]);
+      }
+
+      return result.join(separator);
+    }
+
+    // Make all the icon links unfocusable with tab
+    var iconLinks = document.querySelectorAll('.indexcolicon a');
+    Array.prototype.forEach.call(iconLinks, function(link) {
+      link.setAttribute('tabindex', '-1');
+    });
+
+    var path = document.querySelector('.js-path');
+    var pathParts = location.pathname.split('/');
+
+    // Removing empty strings
+    for (var i = 0; i < pathParts.length;) {
+      if (pathParts[i]) {
+        i++;
+      } else {
+        pathParts.splice(i, 1);
+      }
+    }
+
+    var pathContents = ['<a href="/">/</a>'];
+    Array.prototype.forEach.call(pathParts, function(part, index) {
+      pathContents.push('<a href="/' + joinUntil(pathParts, index, '/') + '">' + decodeURI(part) + '</a>');
+    });
+
+    path.innerHTML = pathContents.join('&rsaquo;');
+  </script>
+{% endblock %}
